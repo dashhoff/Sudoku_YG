@@ -2,19 +2,22 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
 public class SudokuCell : MonoBehaviour
 {
     [SerializeField] private TMP_Text _valueText;
     [SerializeField] private Image _background;
+
     [SerializeField] private Color _normal;
     [SerializeField] private Color _highlight;
+    [SerializeField] private Color _wrong;
 
     private Vector2Int _coord;
     private int _value;
     private int _highlightedNumber;
-    private bool _fixed;
+    private bool _wrongState;
+
     private Button _button;
+    private bool _fixed;
 
     private void Awake()
     {
@@ -39,19 +42,16 @@ public class SudokuCell : MonoBehaviour
         _coord = coord;
         _value = value;
         _fixed = isFixed;
+        _wrongState = false;
         Refresh();
     }
 
-    private void Click()
-    {
-        if (_fixed) return;
-        EventBus.InvokeCellSelected(_coord);
-    }
-
-    private void UpdateValue(Vector2Int coord,int value)
+    private void UpdateValue(Vector2Int coord,int value,bool wrong)
     {
         if (coord != _coord) return;
+
         _value = value;
+        _wrongState = wrong;
         Refresh();
     }
 
@@ -69,9 +69,21 @@ public class SudokuCell : MonoBehaviour
 
     private void ApplyHighlight()
     {
+        if (_wrongState)
+        {
+            _background.color = _wrong;
+            return;
+        }
+
         _background.color =
             (_highlightedNumber != 0 && _value == _highlightedNumber)
                 ? _highlight
                 : _normal;
+    }
+
+    private void Click()
+    {
+        if (_fixed) return;
+        EventBus.InvokeCellSelected(_coord);
     }
 }

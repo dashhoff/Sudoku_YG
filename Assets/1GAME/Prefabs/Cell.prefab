@@ -94,6 +94,7 @@ MonoBehaviour:
   _background: {fileID: 1796045912909070950}
   _normal: {r: 0.95, g: 0.95, b: 0.95, a: 1}
   _highlight: {r: 0.5, g: 0.8324609, b: 1, a: 1}
+  _wrong: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &7987998883136679366
 MonoBehaviour:
   m_ObjectHideFlags: 0
