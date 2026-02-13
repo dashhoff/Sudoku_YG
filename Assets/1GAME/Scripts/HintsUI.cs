@@ -8,5 +8,5 @@ public class HintsUI : MonoBehaviour
     // пример минимального обработчика в HintUI (если у тебя нет)
     private void OnEnable() => EventBus.OnHintsChanged += UpdateHints;
     private void OnDisable() => EventBus.OnHintsChanged -= UpdateHints;
-    private void UpdateHints(int hints) => _text.text = "Hints: " + hints;
+    private void UpdateHints(int hints) => _text.text = hints.ToString();
 }

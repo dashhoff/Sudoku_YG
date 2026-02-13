@@ -68,8 +68,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: e55882f12a4f34a7096b8048c8245a3e, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -92,9 +92,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _valueText: {fileID: 8760471302958502209}
   _background: {fileID: 1796045912909070950}
-  _normal: {r: 0.95, g: 0.95, b: 0.95, a: 1}
-  _highlight: {r: 0.5, g: 0.8324609, b: 1, a: 1}
-  _wrong: {r: 1, g: 0, b: 0, a: 1}
+  _normal: {r: 1, g: 1, b: 1, a: 1}
+  _highlight: {r: 0.5, g: 0.828125, b: 1, a: 1}
+  _wrong: {r: 1, g: 0.5, b: 0.5, a: 1}
 --- !u!114 &7987998883136679366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -239,7 +239,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
