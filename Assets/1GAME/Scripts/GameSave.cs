@@ -16,6 +16,7 @@ public class GameSave
 [Serializable]
 public class Move
 {
+    public bool _wrong;
     public int _x;
     public int _y;
     public int _value;

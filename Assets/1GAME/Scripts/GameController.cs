@@ -152,11 +152,16 @@ public class GameController : MonoBehaviour
         {
             foreach (var move in _save._moves)
             {
+                int correctValue = _solution[move._x, move._y];
+
+                bool wrong = move._value != correctValue;
+
                 _current[move._x, move._y] = move._value;
+
                 EventBus.InvokeCellValueChanged(
                     new Vector2Int(move._x, move._y),
                     move._value,
-                    false
+                    wrong
                 );
             }
         }
@@ -207,6 +212,7 @@ public class GameController : MonoBehaviour
             _move._x = _selected.x;
             _move._y = _selected.y;
             _move._value = number;
+            _move._wrong = !correct;
 
             _save._moves.Add(_move);
             
