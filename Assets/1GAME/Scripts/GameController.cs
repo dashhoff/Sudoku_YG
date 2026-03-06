@@ -11,6 +11,9 @@ public class GameController : MonoBehaviour
     [SerializeField] private ScreenBorderFlash _screenBorderFlash;
     
     [SerializeField] private GameObject _hintUI;
+    
+    private GameSave _save;
+    private int _seed;
 
     private int[,] _current;
     private int[,] _solution;
@@ -49,11 +52,131 @@ public class GameController : MonoBehaviour
         _hints = _startHints;
         _playing = true;
         _eraseMode = false;
+        
+        if (_save == null)
+            _save = new GameSave();
 
         EventBus.InvokeGameStarted();
         EventBus.InvokeLivesChanged(_lives);
         EventBus.InvokeScoreChanged(_score);
         EventBus.InvokeHintsChanged(_hints);
+    }
+    
+    public void StartNewGame()
+    {
+        _seed = Random.Range(int.MinValue,int.MaxValue);
+
+        SudokuBoard _board = FindObjectOfType<SudokuBoard>();
+
+        _board.GenerateFromSeed(_seed,10);
+        _board.SpawnFromPuzzle();
+
+        _solution = _board.GetSolution();
+        _current = (int[,])_board.GetPuzzle().Clone();
+
+        _save = new GameSave();
+        _save._seed = _seed;
+        _save._moves.Clear();
+        _save._moves = new System.Collections.Generic.List<Move>();
+
+        _lives = _startLives;
+        _score = 0;
+        _hints = _startHints;
+
+        EventBus.InvokeGameStarted();
+        EventBus.InvokeLivesChanged(_lives);
+        EventBus.InvokeScoreChanged(_score);
+        EventBus.InvokeHintsChanged(_hints);
+    }
+
+    public void SaveGame()
+    {
+        if (_save == null)
+            _save = new GameSave();
+
+        _save._seed = _seed;
+
+        _save._lives = _lives;
+        _save._score = _score;
+        _save._hints = _hints;
+
+        _save._moves.Clear();
+
+        for (int y = 0; y < 9; y++)
+        for (int x = 0; x < 9; x++)
+        {
+            if (_current[x,y] == 0) continue;
+
+            Move m = new Move();
+            m._x = x;
+            m._y = y;
+            m._value = _current[x,y];
+
+            _save._moves.Add(m);
+        }
+
+        SaveSystem.Save(_save);
+    }
+    
+    public void LoadGameButton()
+    {
+        bool _loaded = LoadGame();
+
+        if (!_loaded)
+            StartNewGame();
+    }
+    
+    public bool LoadGame()
+    {
+        _save = SaveSystem.Load();
+
+        if (_save == null)
+            return false;
+
+        SudokuBoard _board = FindObjectOfType<SudokuBoard>();
+
+        if (_board == null)
+            return false;
+
+        // ----- Восстанавливаем поле -----
+        _seed = _save._seed;
+
+        _board.GenerateFromSeed(_seed, 10);
+        _board.SpawnFromPuzzle();
+
+        _solution = _board.GetSolution();
+        _current = (int[,])_board.GetPuzzle().Clone();
+
+        // ----- Восстанавливаем ходы игрока -----
+        if (_save._moves != null)
+        {
+            foreach (var move in _save._moves)
+            {
+                _current[move._x, move._y] = move._value;
+                EventBus.InvokeCellValueChanged(
+                    new Vector2Int(move._x, move._y),
+                    move._value,
+                    false
+                );
+            }
+        }
+
+        // ----- Восстанавливаем статистику -----
+        _lives = _save._lives;
+        _score = _save._score;
+        _hints = _save._hints;
+
+        _playing = true;
+        _eraseMode = false;
+
+        // ----- Обновляем UI -----
+        EventBus.InvokeGameStarted();
+        EventBus.InvokeLivesChanged(_lives);
+        EventBus.InvokeScoreChanged(_score);
+        EventBus.InvokeHintsChanged(_hints);
+        EventBus.InvokeBoardUpdated();
+
+        return true;
     }
 
     // ---- изменение: при неверном ходе и при снижении _lives вызываем запрос пополнения, если 1 осталась ----
@@ -79,6 +202,15 @@ public class GameController : MonoBehaviour
             EventBus.InvokeScoreChanged(_score);
             EventBus.InvokeSound(SoundType.Correct);
             _screenBorderFlash.PlaySuccess();
+            
+            Move _move = new Move();
+            _move._x = _selected.x;
+            _move._y = _selected.y;
+            _move._value = number;
+
+            _save._moves.Add(_move);
+            
+            SaveGame();
 
             if (CheckWin())
             {
@@ -161,6 +293,8 @@ public class GameController : MonoBehaviour
         _score += _pointsPerCorrect;
         EventBus.InvokeScoreChanged(_score);
 
+        SaveGame();
+        
         if (CheckWin())
         {
             EventBus.InvokeWin();
@@ -241,7 +375,7 @@ public class GameController : MonoBehaviour
 
     private void SelectCell(Vector2Int coord)
     {
-        if (!_playing) return;
+        if (!_playing || _current == null) return;
         _selected = coord;
 
         if (_eraseMode)
@@ -305,6 +439,11 @@ public class GameController : MonoBehaviour
     {
         _playing = false;
         EventBus.InvokeGameEnded();
+
+        _seed = 0;
+        _save = null;
+
+        SaveSystem.Clear();
 
         YG2.saves.MaxScore += _score;
         YG2.SaveProgress();
