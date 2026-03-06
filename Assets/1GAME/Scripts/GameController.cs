@@ -9,6 +9,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private int _startHints = 3;
 
     [SerializeField] private ScreenBorderFlash _screenBorderFlash;
+    
+    [SerializeField] private GameObject _hintUI;
 
     private int[,] _current;
     private int[,] _solution;
@@ -115,6 +117,12 @@ public class GameController : MonoBehaviour
         if (_hints > 0)
         {
             UseHintDirect();
+
+            if (_hints < 1)
+            {
+                _hintUI.gameObject.SetActive(true);
+                
+            }
             return;
         }
 
@@ -132,6 +140,8 @@ public class GameController : MonoBehaviour
     {
         _hints += amount;
         EventBus.InvokeHintsChanged(_hints);
+        if (_hints > 0)
+            _hintUI.gameObject.SetActive(false);
     }
 
 // непосредственно ставим случайную правильную цифру
