@@ -48,4 +48,7 @@ public static class EventBus
     
     public static event Action OnRequestLifeRefill;
     public static void InvokeRequestLifeRefill() => OnRequestLifeRefill?.Invoke();
+    
+    public static event System.Action<SoundType> OnSound;
+    public static void InvokeSound(SoundType type) => OnSound?.Invoke(type);
 }

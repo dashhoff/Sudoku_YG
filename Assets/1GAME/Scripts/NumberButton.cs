@@ -36,6 +36,7 @@ public class NumberButton : MonoBehaviour
     private void Click()
     {
         EventBus.InvokeNumberSelected(_number);
+        EventBus.InvokeSound(SoundType.Click1);
     }
 
     private void OnHighlightNumber(int number)

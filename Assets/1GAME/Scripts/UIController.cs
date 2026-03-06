@@ -4,7 +4,6 @@ using UnityEngine.UI;
 public class UIController : MonoBehaviour
 {
     [SerializeField] private UIPanel _menuPanel;
-    [SerializeField] private UIPanel _shopPanel;
     [SerializeField] private UIPanel _winPanel;
     [SerializeField] private UIPanel _losePanel;
     [SerializeField] private UIPanel _refillLifePanel; // новая панель пополнения
@@ -31,7 +30,6 @@ public class UIController : MonoBehaviour
     private void Start()
     {
         _menuPanel.Open();
-        _shopPanel.Close();
         _winPanel.Close();
         _losePanel.Close();
         if (_refillLifePanel != null) _refillLifePanel.Close();
@@ -52,7 +50,6 @@ public class UIController : MonoBehaviour
     private void OnGameStarted()
     {
         _menuPanel.Close();
-        _shopPanel.Close();
         _winPanel.Close();
         _losePanel.Close();
         if (_refillLifePanel != null) _refillLifePanel.Close();
@@ -83,10 +80,7 @@ public class UIController : MonoBehaviour
     {
         if (_refillLifePanel != null) _refillLifePanel.Close();
     }
-
-    // кнопки магазина/меню
-    public void OpenShop() => _shopPanel.Open();
-    public void CloseShop() => _shopPanel.Close();
+    
     public void BackToMenu()
     {
         _menuPanel.Open();

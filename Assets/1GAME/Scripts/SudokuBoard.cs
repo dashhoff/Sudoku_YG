@@ -12,7 +12,7 @@ public class SudokuBoard : MonoBehaviour
 
     public int holes = 30;
 
-    private void Start()
+    public void Init()
     {
         GeneratePuzzle(holes);
         Spawn();

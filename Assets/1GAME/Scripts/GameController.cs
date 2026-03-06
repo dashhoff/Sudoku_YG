@@ -1,4 +1,5 @@
 using UnityEngine;
+using YG;
 
 public class GameController : MonoBehaviour
 {
@@ -6,6 +7,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private int _pointsPerCorrect = 10;
     [SerializeField] private int _penaltyPoints = 5;
     [SerializeField] private int _startHints = 3;
+
+    [SerializeField] private ScreenBorderFlash _screenBorderFlash;
 
     private int[,] _current;
     private int[,] _solution;
@@ -72,6 +75,8 @@ public class GameController : MonoBehaviour
         {
             _score += _pointsPerCorrect;
             EventBus.InvokeScoreChanged(_score);
+            EventBus.InvokeSound(SoundType.Correct);
+            _screenBorderFlash.PlaySuccess();
 
             if (CheckWin())
             {
@@ -88,7 +93,9 @@ public class GameController : MonoBehaviour
 
         EventBus.InvokeLivesChanged(_lives);
         EventBus.InvokeScoreChanged(_score);
-
+        EventBus.InvokeSound(SoundType.Wrong);
+        _screenBorderFlash.PlayFail();
+        
         // если осталась 1 жизнь — предложить пополнение
         if (_lives == 1)
             EventBus.InvokeRequestLifeRefill();
@@ -251,6 +258,7 @@ public class GameController : MonoBehaviour
         _current[_selected.x, _selected.y] = 0;
         EventBus.InvokeCellValueChanged(_selected, 0, false);
         EventBus.InvokeBoardUpdated();
+        EventBus.InvokeSound(SoundType.Click2);
     }
 
     private bool CheckWin()
@@ -287,5 +295,9 @@ public class GameController : MonoBehaviour
     {
         _playing = false;
         EventBus.InvokeGameEnded();
+
+        YG2.saves.MaxScore += _score;
+        YG2.SaveProgress();
+        YG2.SetLeaderboard("Score",YG2.saves.MaxScore);
     }
 }
